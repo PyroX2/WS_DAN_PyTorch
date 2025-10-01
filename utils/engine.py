@@ -15,7 +15,14 @@ from utils import accuracy, get_lr, save_checkpoint, AverageMeter, set_seed
 
 import torch
 import torch.nn.functional as F
+
+import matplotlib.pyplot as plt
+import os
 from torch.utils.tensorboard import SummaryWriter
+
+
+OUTPUT_ATT_DIR = "attention_maps"
+SAVE_ATT = True
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
@@ -197,6 +204,27 @@ class Engine():
                         'Prec@5 {top5.val:.3f} ({top5.avg:.3f})'.format(
                             i, len(val_loader),
                             top1=top1, top5=top5))
+                    
+                if SAVE_ATT:
+                    batch_size, num_maps, _, _ = attention_maps.shape
+                    print(attention_maps.shape)
+                    attention_maps = F.sigmoid(attention_maps)
+                    input_image = input[0].permute(1, 2, 0).detach().cpu().numpy()
+                    input_image = (input_image - input_image.min()) / (input_image.max() - input_image.min())
+                    if not os.path.exists(os.path.join(OUTPUT_ATT_DIR, "reference_images")):
+                        os.makedirs(os.path.join(OUTPUT_ATT_DIR, "reference_images"))
+                    plt.imsave(os.path.join(OUTPUT_ATT_DIR, "reference_images", f"input_{i}.png"), input_image)
+
+                    output_dir = os.path.join(OUTPUT_ATT_DIR, f"att_maps_{i}")
+                    if not os.path.exists(output_dir):
+                        os.makedirs(output_dir)
+                    for map_idx in range(num_maps):
+                        att_map = attention_maps[0, map_idx].detach().cpu().numpy()
+                        plt.imsave(os.path.join(output_dir, f"att_map_{map_idx}.png"), att_map)
+                    combined_att_map = attention_maps[0].sum(dim=0).detach().cpu().numpy()
+                    combined_att_map = (combined_att_map - combined_att_map.min()) / (combined_att_map.max() - combined_att_map.min())
+                    plt.imsave(os.path.join(output_dir, "combined_att_map.png"), combined_att_map)
+
 
             print(' * Prec@1 {top1.avg:.3f} Prec@5 {top5.avg:.3f}'
                 .format(top1=top1, top5=top5))
