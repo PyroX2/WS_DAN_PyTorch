@@ -15,14 +15,20 @@ from utils import accuracy, get_lr, save_checkpoint, AverageMeter, set_seed
 
 import torch
 import torch.nn.functional as F
+from torch.utils.tensorboard import SummaryWriter
+
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
+writer = SummaryWriter("runs/"+time.strftime("%d %b %Y %H:%M:%S", time.localtime()))
+writer_epoch = 0
 
 class Engine():
     def __init__(self,):
         pass
 
     def train(self,state,epoch):
+        global writer_epoch
+
         batch_time = AverageMeter()
         data_time = AverageMeter()
         losses = AverageMeter()
@@ -90,6 +96,14 @@ class Engine():
                         data_time=data_time, loss=losses, top1=top1, top5=top5))
                 print("loss1,loss2,loss3,feature_center_loss", loss1.item(), loss2.item(), loss3.item(),
                     feature_center_loss.item())
+                
+                writer_epoch = epoch
+                writer.add_scalar('Train/loss1', loss1, global_step=writer_epoch)
+                writer.add_scalar('Train/loss2', loss2, global_step=writer_epoch)
+                writer.add_scalar('Train/loss3', loss3, global_step=writer_epoch)
+                writer.add_scalar('Train/feature_center_loss', feature_center_loss, global_step=writer_epoch)
+                writer.add_scalar('Train/Prec@1', top1.val, global_step=writer_epoch)
+                writer.add_scalar('Train/Prec@5', top5.val, global_step=writer_epoch)
         return top1.avg, losses.avg
     
     def validate(self,state):
@@ -145,8 +159,15 @@ class Engine():
                             i, len(val_loader), batch_time=batch_time, loss=losses,
                             top1=top1, top5=top5))
 
+                    writer.add_scalar('Val/loss1', loss1, global_step=writer_epoch)
+                    writer.add_scalar('Val/loss2', loss2, global_step=writer_epoch)
+                    writer.add_scalar('Val/loss3', loss3, global_step=writer_epoch)
+                    writer.add_scalar('Val/feature_center_loss', feature_center_loss, global_step=writer_epoch)
+                    writer.add_scalar('Val/Prec@1', top1.val, global_step=writer_epoch)
+                    writer.add_scalar('Val/Prec@5', top5.val, global_step=writer_epoch)
             print(' * Prec@1 {top1.avg:.3f} Prec@5 {top5.avg:.3f}'
                 .format(top1=top1, top5=top5))
+            
 
         return top1.avg, losses.avg
 

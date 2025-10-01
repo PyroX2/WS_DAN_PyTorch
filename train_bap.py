@@ -32,7 +32,7 @@ import torchvision.transforms as transforms
 from torch.utils.data import DataLoader
 import torchvision.models as models
 import torch.nn.functional as F
-from tensorboardX import SummaryWriter
+from torch.utils.tensorboard import SummaryWriter
 
 GLOBAL_SEED = 1231
 def _init_fn(worker_id):
