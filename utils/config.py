@@ -43,9 +43,9 @@ def getConfig():
     # training config
     parser.add_argument('--use-gpu', action="store_true", default=True,
                         help='whether use gpu or not, default True')
-    parser.add_argument('--multi-gpu', action="store_true", default=True,
+    parser.add_argument('--multi-gpu', action="store_true", default=False,
                         help='whether use multiple gpus or not, default True')
-    parser.add_argument('--gpu-ids', default='0,1',
+    parser.add_argument('--gpu-ids', default='0',
                         help='gpu id list(eg: 0,1,2...)')
     parser.add_argument('--epochs', default=80, type=int, metavar='N',
                         help='number of total epochs to run')

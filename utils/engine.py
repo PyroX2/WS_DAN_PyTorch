@@ -15,6 +15,8 @@ from utils import accuracy, get_lr, save_checkpoint, AverageMeter, set_seed
 
 import torch
 import torch.nn.functional as F
+device = "cuda" if torch.cuda.is_available() else "cpu"
+
 
 class Engine():
     def __init__(self,):
@@ -38,8 +40,8 @@ class Engine():
             # measure data loading time
             data_time.update(time.time() - end)
 
-            target = label.cuda()
-            input = img.cuda()
+            target = label.to(device)
+            input = img.to(device)
             # compute output
             attention_maps, raw_features, output1 = model(input)
             features = raw_features.reshape(raw_features.shape[0], -1)
@@ -106,8 +108,8 @@ class Engine():
         with torch.no_grad():
             end = time.time()
             for i, (input, target) in enumerate(val_loader):
-                target = target.cuda()
-                input = input.cuda()
+                target = target.to(device)
+                input = input.to(device)
                 # forward
                 attention_maps, raw_features, output1 = model(input)
                 features = raw_features.reshape(raw_features.shape[0], -1)
@@ -156,8 +158,8 @@ class Engine():
         model.eval()
         with torch.no_grad():
             for i, (input, target) in enumerate(val_loader):
-                target = target.cuda()
-                input = input.cuda()
+                target = target.to(device)
+                input = input.to(device)
                 # forward
                 attention_maps, _, output1 = model(input)
                 refined_input = mask2bbox(attention_maps, input)

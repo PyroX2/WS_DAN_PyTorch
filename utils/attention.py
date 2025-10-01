@@ -111,7 +111,7 @@ def attention_crop_drop(attention_maps,input_image):
         selected_index = np.random.choice(np.arange(0, num_parts), 1, p=part_weight)[0]
         selected_index2 = np.random.choice(np.arange(0, num_parts), 1, p=part_weight)[0]
         ## create crop imgs
-        mask = attention_map[selected_index, :, :]
+        mask = attention_map[selected_index, :, :].cpu()
         # mask = (mask-mask.min())/(mask.max()-mask.min())
         threshold = random.uniform(0.4, 0.6)
         # threshold = 0.5
