@@ -1,6 +1,9 @@
 import os
 import argparse
+import dotenv
 
+
+dotenv.load_dotenv()
 
 def getConfig():
     parser = argparse.ArgumentParser()
@@ -65,7 +68,7 @@ def getConfig():
 
 def getDatasetConfig(dataset_name):
     assert dataset_name in ['bird', 'car',
-                            'aircraft','dog'], 'No dataset named %s!' % dataset_name
+                            'aircraft','dog', 'retinopathy'], 'No dataset named %s!' % dataset_name
     dataset_dict = {
         'bird': {'train_root': 'data/Bird/images',  # the root path of the train images stored
                  'val_root': 'data/Bird/images',  # the root path of the validate images stored
@@ -84,6 +87,10 @@ def getDatasetConfig(dataset_name):
                 'val_root': 'data/Dog/Images',
                 'train': 'data/dog_train.txt',
                 'val': 'data/dog_test.txt'},
+        'retinopathy': {'train_root': os.path.join(os.getenv("DATA_PATH"), 'train'),
+                        'val_root': os.path.join(os.getenv("DATA_PATH"), 'val'),
+                        'train': 'data/retinopathy_train.txt',
+                        'val': 'data/retinopathy_val.txt'},
     }
     return dataset_dict[dataset_name]
 
