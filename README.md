@@ -96,6 +96,7 @@ python utils/convert_data.py  --dataset_name bird --root_path .../Fine-grained/C
 
 
 ## Usage
+If you want to train using retinopathy dataset fill .env file with path to root of your dataset. It should contain 'train' and 'val' directories.
 
 - Train
 
