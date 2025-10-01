@@ -192,8 +192,7 @@ def test():
     gpu_ids = [int(r) for r in config.gpu_ids.split(',')]
     if use_gpu and len(gpu_ids) > 1:
         net = torch.nn.DataParallel(net, device_ids=gpu_ids)
-    #checkpoint_path = os.path.join(config.checkpoint_path,'model_best.pth.tar')
-    net.load_state_dict(torch.load(config.checkpoint_path)['state_dict'])
+    net.load_state_dict({k.removeprefix("module."): v for k, v in torch.load(config.checkpoint_path)['state_dict'].items()})
 
     # define loss
     # define loss
