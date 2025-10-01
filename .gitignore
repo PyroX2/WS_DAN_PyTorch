@@ -8,3 +8,4 @@ checkpoint
 runs/
 dataset
 __pycache__
+slurm-*
